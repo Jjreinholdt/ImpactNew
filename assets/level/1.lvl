@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<level width="680" height="3524">
+	<entity x="340" y="20" type="platform1"/>
+	<entity x="340" y="50" type="player"/>
+	
+	<entity x="240" y="400" type="coin"/>
+	<entity x="340" y="500" type="coin"/>
+	<entity x="340" y="600" type="coin"/>
+	<entity x="340" y="700" type="coin"/>
+	<entity x="340" y="800" type="coin"/>
+	<entity x="340" y="900" type="coin"/>
+	<entity x="340" y="1200" type="coin"/>
+	<entity x="340" y="2000" type="coin"/>
+
+	<entity x="320" y="600" type="rotator"/>
+		<entity x="225" y="1250" type="rotator"/>
+		<entity x="450" y="1250" type="rotator"/>
+	
+	<entity x="240" y="550" type="platform2"/>
+	<entity x="440" y="550" type="platform2"/>
+	<entity x="440" y="550" type="platform2"/>
+	<entity x="540" y="850" type="platform2"/>
+	
+	<entity x="170" y="650" type="platform3"/>
+	<entity x="270" y="850" type="platform3"/>
+	<entity x="170" y="650" type="platform3"/>
+	<entity x="240" y="900" type="platform3"/>
+	
+
+		<entity x="140" y="1350" type="platform2"/>
+		<entity x="640" y="1450" type="platform2"/>
+		<entity x="540" y="1650" type="platform2"/>
+		<entity x="400" y="1950" type="platform2"/>
+		<entity x="240" y="2150" type="platform2"/>
+		<entity x="100" y="1950" type="platform2"/>
+
+		<entity x="120" y="1150" type="platform3"/>
+		<entity x="420" y="1300" type="platform3"/>
+		<entity x="570" y="1450" type="platform3"/>		
+		<entity x="520" y="1650" type="platform3"/>
+		<entity x="120" y="1850" type="platform3"/>
+
+		
+	<entity x="310" y="850" type="bird"/>
+	<entity x="410" y="415" type="bird"/>
+</level>
