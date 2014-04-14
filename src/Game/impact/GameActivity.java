@@ -20,11 +20,7 @@ import Game.impact.manager.ResourcesManager;
 import Game.impact.manager.SceneManager;
 import Game.impact.object.Player;
 
-/**
- * @author James Reinholdt
- * @version 1.0
- * Main Game Activity Class
- */
+
 public class GameActivity extends BaseGameActivity
 {
 	private BoundCamera camera;
@@ -50,7 +46,8 @@ public class GameActivity extends BaseGameActivity
 	{  
 	    if (keyCode == KeyEvent.KEYCODE_BACK)
 	    {
-	    	SceneManager.getInstance().getCurrentScene().onBackKeyPressed();
+	    	SceneManager.getInstance();
+			SceneManager.getCurrentScene().onBackKeyPressed();
 	    }
 	    switch (keyCode) 
 	    {

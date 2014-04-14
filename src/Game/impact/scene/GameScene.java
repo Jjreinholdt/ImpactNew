@@ -1,10 +1,8 @@
 package Game.impact.scene;
 
 import java.io.IOException;
-import java.math.*;
 
 import org.andengine.engine.camera.hud.HUD;
-import org.andengine.engine.handler.physics.PhysicsHandler;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.LoopEntityModifier;
 import org.andengine.entity.modifier.RotationModifier;
@@ -16,7 +14,6 @@ import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
 import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
-import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.input.touch.TouchEvent;
@@ -34,10 +31,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.view.KeyEvent;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -46,19 +41,17 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
-import Game.impact.R.string;
+
 import Game.impact.base.BaseScene;
 import Game.impact.extras.LevelCompleteWindow;
 import Game.impact.extras.LevelCompleteWindow.StarsCount;
+import Game.impact.manager.ResourcesManager;
 import Game.impact.manager.SceneManager;
 import Game.impact.manager.SceneManager.SceneType;
 import Game.impact.object.Enemy;
 import Game.impact.object.Player;
 
-/**
- * @author James Reinholdt
- * @version 1.0
- */
+
 public class GameScene extends BaseScene implements IOnSceneTouchListener, SensorEventListener
 {
 	private int score = 0;
@@ -83,13 +76,12 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_ROTATOR = "rotator";
 	
 	public static Player player;
-	private Enemy enemy;
+	
 	private SensorManager mSensorManager;
 	private Sensor mAccelerometer;
 
 	public static float TILT;
 
-	private Text gameOverText;
 	private boolean gameOverDisplayed = false;
 	private Text calcEndVelocity;
 	
@@ -103,7 +95,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 		createHUD();
 		createPhysics();
 		loadLevel(1);
-		
 		levelCompleteWindow = new LevelCompleteWindow(vbom);
 		
 		mSensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
@@ -156,7 +147,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 	private void loadLevel(int levelID)
 	{
 		final SimpleLevelLoader levelLoader = new SimpleLevelLoader(vbom);
-		
 		final FixtureDef FIXTURE_DEF = PhysicsFactory.createFixtureDef(0, 0.01f, 0.5f);
 		
 		levelLoader.registerEntityLoader(new EntityLoader<SimpleLevelEntityLoaderData>(LevelConstants.TAG_LEVEL)
@@ -185,13 +175,13 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 				
 				if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM1))
 				{
-					levelObject = new Sprite(x, y, resourcesManager.platform1_region, vbom);
+					levelObject = new Sprite(x, y, ResourcesManager.platform1_region, vbom);
 					PhysicsFactory.createBoxBody(physicsWorld, levelObject, BodyType.StaticBody, FIXTURE_DEF).setUserData("platform1");
 				} 
 				
 				else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BIRD))
 				{	
-					Sprite sprite = new Sprite(x,y,resourcesManager.bird_region, vbom);
+					Sprite sprite = new Sprite(x,y,ResourcesManager.bird_region, vbom);
 					levelObject = new Enemy(sprite, vbom, physicsWorld)
 					{
 						@Override
@@ -212,7 +202,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 				
 				else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM2))
 				{	
-					Sprite sprite = new Sprite(x,y,resourcesManager.platform2_region,vbom);
+					Sprite sprite = new Sprite(x,y,ResourcesManager.platform2_region,vbom);
 					levelObject = new Enemy(sprite, vbom, physicsWorld)
 					{	
 						@Override
@@ -223,7 +213,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 							if (player.collidesWith(this))
 							{
 								addToScore(15);
-								player.setVelocityY(player.getBody().getLinearVelocity().y-4);
+								player.setVelocityY(Player.getBody().getLinearVelocity().y-4);
 								this.setVisible(false);
 								this.setIgnoreUpdate(true);
 							}
@@ -232,10 +222,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 					
 				}
 				
-				
 				else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM3))
 				{
-					levelObject = new Sprite(x, y, resourcesManager.platform3_region, vbom)
+					levelObject = new Sprite(x, y, ResourcesManager.platform3_region, vbom)
 					{	
 						@Override
 						protected void onManagedUpdate(float pSecondsElapsed) 
@@ -245,7 +234,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 							if (player.collidesWith(this))
 							{
 								addToScore(15);
-								player.setVelocityY(player.getBody().getLinearVelocity().y-4);
+								player.setVelocityY(Player.getBody().getLinearVelocity().y-4);
 								this.setVisible(false);
 								this.setIgnoreUpdate(true);
 							}
@@ -273,6 +262,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 					};
 					levelObject.registerEntityModifier(new LoopEntityModifier(new ScaleModifier(1, 1, 1.3f)));
 				}	
+				
 				else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLAYER))
 				{
 					player = new Player(x, y, vbom, camera, physicsWorld)
@@ -300,7 +290,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 
 							if (player.collidesWith(this))
 							{
-								player.setVelocityY(player.getBody().getLinearVelocity().y-4);
+								player.setVelocityY(Player.getBody().getLinearVelocity().y-4);
 								this.setVisible(false);
 								this.setIgnoreUpdate(true);
 							}
@@ -360,7 +350,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 	private void createHUD()
 	{
 		gameHUD = new HUD();
-		
 		scoreText = new Text(20, 420, resourcesManager.font, "Score: 0123456789", new TextOptions(HorizontalAlign.LEFT), vbom);
 		scoreText.setAnchorCenter(0, 0);	
 		scoreText.setText("Score: 0");
@@ -395,15 +384,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 	// ---------------------------------------------
 	// INTERNAL CLASSES
 	// ---------------------------------------------
-	private void removeObject(final Sprite sprite)
-	{
-		final PhysicsConnector myPhysicsConnector = physicsWorld.getPhysicsConnectorManager().findPhysicsConnectorByShape(sprite);
-		physicsWorld.unregisterPhysicsConnector(myPhysicsConnector);
-		physicsWorld.destroyBody(myPhysicsConnector.getBody());
-		unregisterTouchArea(sprite);
-
-	    System.gc();
-	}
 	
 	private ContactListener contactListener()
 	{	
@@ -419,15 +399,11 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 				{
 					if (x1.getBody().getUserData() != null && x2.getBody().getUserData() != null)
 					{   
-			
 						if (x1.getBody().getUserData().equals("platform1") && x2.getBody().getUserData().equals("player"))
-						{	player.setFinalVelocity(player.getBody().getLinearVelocity().y);
+						{	
+							player.setFinalVelocity(Player.getBody().getLinearVelocity().y);
 							player.onDie();
 						}
-						/*if (x1.getBody().getUserData().equals("player") && !(x2.getBody().getUserData().equals("platform1")))
-						{			
-
-						}*/
 					}
 				}
 			}
@@ -467,12 +443,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 	}
 
 	@Override
-	public void onAccuracyChanged(Sensor sensor, int accuracy) 
-	{
-		// TODO Auto-generated method stub
-		
-	}
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 
+	@SuppressWarnings("static-access")
 	@Override
 	public void onSensorChanged(SensorEvent event) 
 	{	

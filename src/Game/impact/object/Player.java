@@ -21,9 +21,10 @@ public abstract class Player extends AnimatedSprite
 	
 	private static Body body;
 	private float finalVelocity;
-	private static boolean invulnerable = false;
 	private static boolean launched = false;
-	private static int launchSpeed;
+	//private static boolean invulnerable = false; 
+	//private static int launchSpeed;
+	
 	// ---------------------------------------------
 	// CONSTRUCTOR
 	// ---------------------------------------------

@@ -1,6 +1,6 @@
 package Game.impact.object;
 
-import org.andengine.entity.scene.Scene;
+
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
@@ -8,7 +8,7 @@ import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
-import com.badlogic.gdx.math.Vector2;
+
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import Game.impact.manager.ResourcesManager;
@@ -48,21 +48,24 @@ public abstract class Enemy extends Sprite
 	{	
 		if(region == ResourcesManager.bird_region)
 		{	
-		body = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.KinematicBody, PhysicsFactory.createFixtureDef(0, 0, 0));
-		body.setUserData(getSprite());
-		body.setLinearVelocity(-3, 0);
+			body = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.KinematicBody, PhysicsFactory.createFixtureDef(0, 0, 0));
+			body.setUserData(getSprite());
+			body.setLinearVelocity(-3, 0);
 		}
+
 		if(region == ResourcesManager.platform2_region)
 		{
 			body = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.KinematicBody, PhysicsFactory.createFixtureDef(0, 0, 0));
 			body.setUserData(getSprite());
 		}
+		
 		pConnect = new PhysicsConnector(this, body, true, false)
 		{
 			@Override
 	        public void onUpdate(float pSecondsElapsed)
 	        {
 				super.onUpdate(pSecondsElapsed);
+				
 				if(getSprite().getTextureRegion() == ResourcesManager.bird_region)
 				{  
 					if (getX() - getWidth() <= 0)
@@ -71,13 +74,14 @@ public abstract class Enemy extends Sprite
 					if (getX() + getWidth() >= 680 )
 						getBody().setLinearVelocity(getBody().getLinearVelocity().x * -1, 0);
 				}
-				else
+				
+				if(getSprite().getTextureRegion() == ResourcesManager.platform2_region)
 				{
 					double distance = Math.sqrt((GameScene.player.getX() - getX())*(GameScene.player.getX() - getX()) + (GameScene.player.getY() - getY())*(GameScene.player.getY() - getY()));
 					if( distance <= 400)
 					{	
 						if(GameScene.player.getX() < getX())
-							getBody().setLinearVelocity(-1,0);
+							 getBody().setLinearVelocity(-1,0);
 						else getBody().setLinearVelocity(1,0);
 					
 					}
@@ -89,6 +93,11 @@ public abstract class Enemy extends Sprite
 		physicsWorld.registerPhysicsConnector(pConnect);
 
 	}
+	
+	// --------
+	// Getters
+	// --------
+	
 	public static Body getBody()
 	{	
 		return body;
@@ -103,23 +112,6 @@ public abstract class Enemy extends Sprite
 	{
 		return pConnect;
 	}
-
-	public void destroyObject(Enemy enemy, Scene scene, PhysicsWorld physicsWorld)
-	{
-	    physicsWorld.unregisterPhysicsConnector(getPhysicsConnector());
-	    physicsWorld.destroyBody(getBody());
-
-	    System.gc();
-	}
-
-	public static void setVelocityX(float f) 
-	{
-			body.setLinearVelocity(new Vector2(f,body.getLinearVelocity().y));
-	}
-	public void setVelocityY(float f)
-	{
-		body.setLinearVelocity(new Vector2(body.getLinearVelocity().x,f));
-	}
-		
+	
 		
 }//end
