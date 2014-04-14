@@ -1,5 +1,8 @@
 package Game.impact.manager;
 
+import org.andengine.audio.music.Music;
+import org.andengine.audio.music.MusicFactory;
+import org.andengine.audio.sound.Sound;
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.BoundCamera;
 import org.andengine.opengl.font.Font;
@@ -21,6 +24,8 @@ import android.graphics.Color;
 
 import Game.impact.GameActivity;
 
+import org.andengine.ui.IGameInterface.OnCreateResourcesCallback;
+import org.andengine.ui.activity.BaseGameActivity;
 
 public class ResourcesManager
 {
@@ -40,6 +45,9 @@ public class ResourcesManager
 	//---------------------------------------------
 	// TEXTURES & TEXTURE REGIONS
 	//---------------------------------------------
+	
+	Sound mySound;
+	Music myMusic;
 	
 	public ITextureRegion splash_region;
 	public ITextureRegion menu_background_region;

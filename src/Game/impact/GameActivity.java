@@ -2,6 +2,10 @@ package Game.impact;
 
 import java.io.IOException;
 
+import org.andengine.audio.music.Music;
+import org.andengine.audio.music.MusicFactory;
+import org.andengine.audio.sound.Sound;
+import org.andengine.audio.sound.SoundFactory;
 import org.andengine.engine.Engine;
 import org.andengine.engine.LimitedFPSEngine;
 import org.andengine.engine.camera.BoundCamera;
@@ -24,6 +28,8 @@ import Game.impact.object.Player;
 public class GameActivity extends BaseGameActivity
 {
 	private BoundCamera camera;
+	public static Music myMusic;
+	public static Sound explosion;
 	
 	@Override
 	public Engine onCreateEngine(EngineOptions pEngineOptions) 
@@ -66,13 +72,30 @@ public class GameActivity extends BaseGameActivity
 
 	public void onCreateResources(OnCreateResourcesCallback pOnCreateResourcesCallback) throws IOException
 	{
+		
 		ResourcesManager.prepareManager(mEngine, this, camera, getVertexBufferObjectManager());
+
+
+		        try
+		        {	MusicFactory.setAssetBasePath( "sfx/" );
+		            myMusic = MusicFactory.createMusicFromAsset(mEngine.getMusicManager(), this,"group1-Menu.mp3");
+		        }
+
+		        
+		        catch (IOException e)
+		        {
+		            e.printStackTrace();
+		        }
+
+		   
 		pOnCreateResourcesCallback.onCreateResourcesFinished();
 	}
 
 	public void onCreateScene(OnCreateSceneCallback pOnCreateSceneCallback) throws IOException
 	{
 		SceneManager.getInstance().createSplashScene(pOnCreateSceneCallback);
+		GameActivity.myMusic.play();
+		myMusic.setLooping(true);
 	}
 
 	public void onPopulateScene(Scene pScene, OnPopulateSceneCallback pOnPopulateSceneCallback) throws IOException
