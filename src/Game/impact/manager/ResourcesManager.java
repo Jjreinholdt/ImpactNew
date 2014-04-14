@@ -50,10 +50,10 @@ public class ResourcesManager
 	public BuildableBitmapTextureAtlas gameTextureAtlas;
 	
 	// Game Texture Regions
-	public ITiledTextureRegion bird_region;
-	public ITextureRegion platform1_region;
-	public ITextureRegion platform2_region;
-	public ITextureRegion platform3_region;
+	public static ITextureRegion bird_region;
+	public static ITextureRegion platform1_region;
+	public static ITextureRegion platform2_region;
+	public static ITextureRegion platform3_region;
 	public ITextureRegion coin_region;
 	public ITextureRegion complete_window_region;
 	public ITiledTextureRegion player_region;
@@ -124,7 +124,7 @@ public class ResourcesManager
        	platform1_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "platform1.png");
        	platform2_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "platform2.png");
        	platform3_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "platform3.png");
-       	bird_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "bird.png",1,1);
+       	bird_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "bird.png");
         coin_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "coin.png");
         player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "player.png", 3, 1);
         complete_window_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "levelCompleteWindow.png");

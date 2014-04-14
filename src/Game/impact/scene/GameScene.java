@@ -1,6 +1,7 @@
 package Game.impact.scene;
 
 import java.io.IOException;
+import java.math.*;
 
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.handler.physics.PhysicsHandler;
@@ -81,7 +82,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_LEVEL_COMPLETE = "levelComplete";
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_ROTATOR = "rotator";
 	
-	private Player player;
+	public static Player player;
 	private Enemy enemy;
 	private SensorManager mSensorManager;
 	private Sensor mAccelerometer;
@@ -107,7 +108,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 		
 		mSensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
 
-		if (mSensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER).size() != 0) {
+		if (mSensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER).size() != 0) 
+		{
 			mAccelerometer = mSensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER).get(0);
 			mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
 		}
@@ -188,36 +190,36 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 				} 
 				
 				else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BIRD))
-				{
-					levelObject = new Sprite(x,y,resourcesManager.bird_region, vbom);
-					final Body body = PhysicsFactory.createBoxBody(physicsWorld, levelObject, BodyType.KinematicBody, FIXTURE_DEF);
-					body.setLinearVelocity(-3.5f,0);
-					physicsWorld.registerPhysicsConnector(new PhysicsConnector(levelObject, body, true, false)		
-					{	
+				{	
+					Sprite sprite = new Sprite(x,y,resourcesManager.bird_region, vbom);
+					levelObject = new Enemy(sprite, vbom, physicsWorld)
+					{
 						@Override
-						public void onUpdate(float pSecondsElapsed) 
+						protected void onManagedUpdate(float pSecondsElapsed)
 						{
-							super.onUpdate(pSecondsElapsed);
-							if( levelObject.getX() - levelObject.getWidth() < 0)
-								body.setLinearVelocity(body.getLinearVelocity().x * -1, 0);
-							if( levelObject.getX() + levelObject.getWidth() >=  680)
-								body.setLinearVelocity(body.getLinearVelocity().x * -1, 0);
+							super.onManagedUpdate(pSecondsElapsed);
 
+							if(player.collidesWith(this))
+							{
+								this.setVisible(false);
+								this.setIgnoreUpdate(true);
+							}
+							
 						}
-					}
-					);		
+					};
 				} 
 				
 				
 				else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM2))
-				{
-					levelObject = new Sprite(x, y, resourcesManager.platform2_region, vbom)
+				{	
+					Sprite sprite = new Sprite(x,y,resourcesManager.platform2_region,vbom);
+					levelObject = new Enemy(sprite, vbom, physicsWorld)
 					{	
 						@Override
 						protected void onManagedUpdate(float pSecondsElapsed) 
 						{
 							super.onManagedUpdate(pSecondsElapsed);
-
+							
 							if (player.collidesWith(this))
 							{
 								addToScore(15);
@@ -252,7 +254,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 				}
 				
 				else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_COIN))
-				{
+				{	
+					
 					levelObject = new Sprite(x, y, resourcesManager.coin_region, vbom)
 					{
 						@Override
@@ -305,7 +308,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 					};
 					levelObject.registerEntityModifier(new LoopEntityModifier(new RotationModifier(6,180,0)));
 				}	
-				// ANTIQUDATED
+				// ANTIQUDATED-------------------
 				else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_LEVEL_COMPLETE))
 				{
 					levelObject = new Sprite(x, y, resourcesManager.complete_stars_region, vbom)
@@ -324,7 +327,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 						}
 					};
 					levelObject.registerEntityModifier(new LoopEntityModifier(new RotationModifier(254,180,0)));
-				}// end
+				}// end-----------------------------
 				else
 				{
 					throw new IllegalArgumentException();
@@ -392,40 +395,39 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 	// ---------------------------------------------
 	// INTERNAL CLASSES
 	// ---------------------------------------------
-	private void removeObject(final Sprite mySprite)
+	private void removeObject(final Sprite sprite)
 	{
-	    final PhysicsConnector myPhysicsConnector = this.physicsWorld.getPhysicsConnectorManager().findPhysicsConnectorByShape(mySprite);
-
-	    this.physicsWorld.unregisterPhysicsConnector(myPhysicsConnector);
-	    this.physicsWorld.destroyBody(myPhysicsConnector.getBody());
-
-	    this.unregisterTouchArea(mySprite);
-	    this.detachChild(mySprite);
+		final PhysicsConnector myPhysicsConnector = physicsWorld.getPhysicsConnectorManager().findPhysicsConnectorByShape(sprite);
+		physicsWorld.unregisterPhysicsConnector(myPhysicsConnector);
+		physicsWorld.destroyBody(myPhysicsConnector.getBody());
+		unregisterTouchArea(sprite);
 
 	    System.gc();
 	}
 	
 	private ContactListener contactListener()
-	{
+	{	
 		ContactListener contactListener = new ContactListener()
 		{
+
 			public void beginContact(Contact contact)
 			{
 				final Fixture x1 = contact.getFixtureA();
 				final Fixture x2 = contact.getFixtureB();
+				
 				if (firstTouch)
 				{
 					if (x1.getBody().getUserData() != null && x2.getBody().getUserData() != null)
 					{   
-						if (x2.getBody().getUserData().equals("player") && x1.getBody().getUserData().equals("platform1"))
+			
+						if (x1.getBody().getUserData().equals("platform1") && x2.getBody().getUserData().equals("player"))
 						{	player.setFinalVelocity(player.getBody().getLinearVelocity().y);
 							player.onDie();
 						}
-						
-						if (x1.getBody().getUserData().equals("bird") && x2.getBody().getUserData().equals("player"))
-						{
+						/*if (x1.getBody().getUserData().equals("player") && !(x2.getBody().getUserData().equals("platform1")))
+						{			
 
-						}
+						}*/
 					}
 				}
 			}
@@ -437,20 +439,30 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 
 				if (x1.getBody().getUserData() != null && x2.getBody().getUserData() != null)
 				{
+					if (x1.getBody().getUserData().equals("player") && !(x2.getBody().getUserData().equals("platform1")));
+						
 					
 				}
 			}
 
 			public void preSolve(Contact contact, Manifold oldManifold)
-			{
-
+			{	
+				final Fixture x1 = contact.getFixtureA();
+				final Fixture x2 = contact.getFixtureB();
+				
+				if (x1.getBody().getUserData().equals("player") && !(x2.getBody().getUserData().equals("platform1")))
+				{			
+					x2.getBody().setActive(false);
+				}
 			}
 
 			public void postSolve(Contact contact, ContactImpulse impulse)
 			{
 
+				
 			}
 		};
+		
 		return contactListener;
 	}
 

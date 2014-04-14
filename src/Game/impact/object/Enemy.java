@@ -1,69 +1,116 @@
 package Game.impact.object;
 
-import org.andengine.entity.sprite.AnimatedSprite;
+import org.andengine.entity.scene.Scene;
+import org.andengine.entity.sprite.Sprite;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
+import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import Game.impact.manager.ResourcesManager;
+import Game.impact.scene.GameScene;
 
 
-public abstract class Enemy extends AnimatedSprite
+public abstract class Enemy extends Sprite
 {
 	// ---------------------------------------------
 	// VARIABLES
 	// ---------------------------------------------
-	
 	private static Body body;
-	
+	private Sprite enemySprite;
+	private PhysicsConnector pConnect;
 	// ---------------------------------------------
-	// CONSTRUCTOR
+	// CONSTRUCTORS
 	// ---------------------------------------------
-	
-	public Enemy(float pX, float pY, VertexBufferObjectManager vbo, PhysicsWorld physicsWorld)
+	public Enemy(Sprite sprite, VertexBufferObjectManager vbo, PhysicsWorld physicsWorld)
 	{
-		super(pX, pY, ResourcesManager.getInstance().bird_region, vbo);
-		createPhysics(physicsWorld);
+		super(sprite.getX(), sprite.getY(), sprite.getTextureRegion(), vbo);
+		enemySprite = sprite;
+		createPhysics(sprite.getTextureRegion(),physicsWorld);
+	}
+	
+	public Enemy(float pX, float pY, ITextureRegion region, VertexBufferObjectManager vbo, PhysicsWorld physicsWorld)
+	{	
+		super(pX, pY, region, vbo);
+		createPhysics(region,physicsWorld);
 	}
 	
 	// ---------------------------------------------
 	// CLASS LOGIC
 	// ---------------------------------------------
-	
-	private void createPhysics(PhysicsWorld physicsWorld)
-	{		
-		body = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.DynamicBody, PhysicsFactory.createFixtureDef(0, 0, 0));
 
-		body.setUserData("enemy");
-		body.setFixedRotation(true);
-		body.setLinearVelocity(-8, 0);
-		physicsWorld.registerPhysicsConnector(new PhysicsConnector(this, body, true, false)
+	
+	private void createPhysics(ITextureRegion region, PhysicsWorld physicsWorld)
+	{	
+		if(region == ResourcesManager.bird_region)
+		{	
+		body = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.KinematicBody, PhysicsFactory.createFixtureDef(0, 0, 0));
+		body.setUserData(getSprite());
+		body.setLinearVelocity(-3, 0);
+		}
+		if(region == ResourcesManager.platform2_region)
+		{
+			body = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.KinematicBody, PhysicsFactory.createFixtureDef(0, 0, 0));
+			body.setUserData(getSprite());
+		}
+		pConnect = new PhysicsConnector(this, body, true, false)
 		{
 			@Override
-			public void onUpdate(float pSecondsElapsed)
-			{
+	        public void onUpdate(float pSecondsElapsed)
+	        {
 				super.onUpdate(pSecondsElapsed);
-				if (getX() - getWidth() <= 0)
-		        {
-					body.setLinearVelocity(body.getLinearVelocity().x * -1, 0);
-		        }
-		        if (getX() + getWidth() >= 680 )
-		        {
-		        	body.setLinearVelocity(body.getLinearVelocity().x * -1, 0);
-		        }
-			}
-		});
+				if(getSprite().getTextureRegion() == ResourcesManager.bird_region)
+				{  
+					if (getX() - getWidth() <= 0)
+						getBody().setLinearVelocity((getBody().getLinearVelocity().x * -1), 0);
+		      
+					if (getX() + getWidth() >= 680 )
+						getBody().setLinearVelocity(getBody().getLinearVelocity().x * -1, 0);
+				}
+				else
+				{
+					double distance = Math.sqrt((GameScene.player.getX() - getX())*(GameScene.player.getX() - getX()) + (GameScene.player.getY() - getY())*(GameScene.player.getY() - getY()));
+					if( distance <= 400)
+					{	
+						if(GameScene.player.getX() < getX())
+							getBody().setLinearVelocity(-1,0);
+						else getBody().setLinearVelocity(1,0);
+					
+					}
+					else getBody().setLinearVelocity(0,0);
+				}   
+	        }
+		};
+		
+		physicsWorld.registerPhysicsConnector(pConnect);
+
 	}
 	public static Body getBody()
 	{	
 		return body;
 	}
+	
+	public Sprite getSprite()
+	{
+		return enemySprite;
+	}
+	
+	public PhysicsConnector getPhysicsConnector()
+	{
+		return pConnect;
+	}
 
-	public abstract void onDie();
+	public void destroyObject(Enemy enemy, Scene scene, PhysicsWorld physicsWorld)
+	{
+	    physicsWorld.unregisterPhysicsConnector(getPhysicsConnector());
+	    physicsWorld.destroyBody(getBody());
+
+	    System.gc();
+	}
 
 	public static void setVelocityX(float f) 
 	{

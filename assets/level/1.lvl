@@ -43,4 +43,5 @@
 		
 	<entity x="310" y="850" type="bird"/>
 	<entity x="410" y="415" type="bird"/>
+	<entity x="310" y="250" type="bird"/>
 </level>

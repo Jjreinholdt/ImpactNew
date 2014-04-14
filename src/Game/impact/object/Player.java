@@ -54,7 +54,7 @@ public abstract class Player extends AnimatedSprite
 				super.onUpdate(pSecondsElapsed);
 				camera.onUpdate(0.1f);
 				
-				if (getX() < 0) 
+				if (getX() - getWidth() < 0) 
 				{
 					setVelocityX(body.getLinearVelocity().x+10);
 				    setX(getWidth()/2);

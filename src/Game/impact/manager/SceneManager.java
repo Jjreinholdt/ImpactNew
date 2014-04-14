@@ -35,7 +35,7 @@ public class SceneManager
 	
 	private SceneType currentSceneType = SceneType.SCENE_SPLASH;
 	
-	private BaseScene currentScene;
+	private static BaseScene currentScene;
 	
 	private Engine engine = ResourcesManager.getInstance().engine;
 	
@@ -149,7 +149,7 @@ public class SceneManager
 		return currentSceneType;
 	}
 	
-	public BaseScene getCurrentScene()
+	public static BaseScene getCurrentScene()
 	{
 		return currentScene;
 	}
