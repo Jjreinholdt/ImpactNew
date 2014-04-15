@@ -29,7 +29,10 @@ public class GameActivity extends BaseGameActivity
 {
 	private BoundCamera camera;
 	public static Music myMusic;
-	public static Sound explosion;
+	public static Music explosion1;
+	public static Music explosion2;
+	public static Music explosion3;
+	public static boolean onOffToggle=false;
 	
 	@Override
 	public Engine onCreateEngine(EngineOptions pEngineOptions) 
@@ -74,20 +77,27 @@ public class GameActivity extends BaseGameActivity
 	{
 		
 		ResourcesManager.prepareManager(mEngine, this, camera, getVertexBufferObjectManager());
-
-
-		        try
-		        {	MusicFactory.setAssetBasePath( "sfx/" );
-		            myMusic = MusicFactory.createMusicFromAsset(mEngine.getMusicManager(), this,"group1-Menu.mp3");
-		        }
-
-		        
-		        catch (IOException e)
-		        {
-		            e.printStackTrace();
-		        }
-
-		   
+		MusicFactory.setAssetBasePath( "sfx/" );
+		SoundFactory.setAssetBasePath("sfx/");
+		try
+		{	
+		    myMusic = MusicFactory.createMusicFromAsset(mEngine.getMusicManager(), this,"group1-Menu.mp3");
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		try
+		{
+			explosion1 = MusicFactory.createMusicFromAsset(mEngine.getMusicManager(), this,"explodingsample.mp3");
+			explosion2 = MusicFactory.createMusicFromAsset(mEngine.getMusicManager(), this,"explodingsample.mp3");
+			explosion3 = MusicFactory.createMusicFromAsset(mEngine.getMusicManager(), this,"explodingsample.mp3");
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		
 		pOnCreateResourcesCallback.onCreateResourcesFinished();
 	}
 
@@ -117,4 +127,19 @@ public class GameActivity extends BaseGameActivity
 		super.onDestroy();
 		System.exit(0);	
 	}
+	
+	public static void toggle(Engine engine)
+	{
+		if(onOffToggle)
+		{
+			onOffToggle=false;
+			engine.getMusicManager().setMasterVolume(0);
+		}
+		else
+		{
+			onOffToggle=true;
+			engine.getMusicManager().setMasterVolume(1);
+		}
+	}
+
 }

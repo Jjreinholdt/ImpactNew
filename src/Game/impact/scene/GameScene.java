@@ -3,6 +3,7 @@ package Game.impact.scene;
 import java.io.IOException;
 
 import org.andengine.engine.camera.hud.HUD;
+import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.LoopEntityModifier;
 import org.andengine.entity.modifier.RotationModifier;
@@ -10,6 +11,7 @@ import org.andengine.entity.modifier.ScaleModifier;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
+import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
@@ -42,6 +44,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
 
+import Game.impact.GameActivity;
 import Game.impact.base.BaseScene;
 import Game.impact.extras.LevelCompleteWindow;
 import Game.impact.extras.LevelCompleteWindow.StarsCount;
@@ -76,6 +79,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 	private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_ROTATOR = "rotator";
 	
 	public static Player player;
+	public AnimatedSprite explosion;
 	
 	private SensorManager mSensorManager;
 	private Sensor mAccelerometer;
@@ -86,7 +90,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 	private Text calcEndVelocity;
 	
 	private boolean firstTouch = false;
-
+	private float pX,pY;
 	
 	@Override
 	public void createScene()
@@ -190,7 +194,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 							super.onManagedUpdate(pSecondsElapsed);
 
 							if(player.collidesWith(this))
-							{
+							{	
+								pX=getX();
+								pY=getY();
+								createExplosion(pX,pY);
 								this.setVisible(false);
 								this.setIgnoreUpdate(true);
 							}
@@ -211,7 +218,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 							super.onManagedUpdate(pSecondsElapsed);
 							
 							if (player.collidesWith(this))
-							{
+							{	
+								pX=getX();
+								pY=getY();
+								createExplosion(pX,pY);
 								addToScore(15);
 								player.setVelocityY(Player.getBody().getLinearVelocity().y-4);
 								this.setVisible(false);
@@ -233,6 +243,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 
 							if (player.collidesWith(this))
 							{
+								GameActivity.explosion3.play();
 								addToScore(15);
 								player.setVelocityY(Player.getBody().getLinearVelocity().y-4);
 								this.setVisible(false);
@@ -374,6 +385,35 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 		setBackground(new Background(Color.BLUE));
 	}
 	
+	private void createExplosion(float pX, float pY)
+	{
+		GameActivity.explosion1.play();
+
+		explosion = new AnimatedSprite(pX,pY, ResourcesManager.explosion_region, vbom);
+		explosion.animate(new long[] {55,55,55,55}, 0, 3, false);	    
+		attachChild(explosion);
+		explosion.registerUpdateHandler(new IUpdateHandler()
+		{
+
+	        @Override
+	        public void onUpdate(float pSecondsElapsed)
+	        {
+	            if(explosion.getCurrentTileIndex() == 3)
+	            {
+	                explosion.setVisible(false);
+	                explosion.unregisterUpdateHandler(this);
+	            }
+	        }
+
+			@Override
+			public void reset() {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+	}
+	
 	private void createPhysics()
 	{
 		physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0, -5), false); 
@@ -429,6 +469,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 				if (x1.getBody().getUserData().equals("player") && !(x2.getBody().getUserData().equals("platform1")))
 				{			
 					x2.getBody().setActive(false);
+					
 				}
 			}
 

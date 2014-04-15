@@ -9,6 +9,7 @@ import org.andengine.entity.scene.menu.item.decorator.ScaleMenuItemDecorator;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.opengl.util.GLState;
 
+import Game.impact.GameActivity;
 import Game.impact.base.BaseScene;
 import Game.impact.manager.SceneManager;
 import Game.impact.manager.SceneManager.SceneType;
@@ -22,7 +23,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private MenuScene menuChildScene;
 	
 	private final int MENU_PLAY = 0;
-	private final int MENU_OPTIONS = 1;
+	private final int MENU_SOUND = 1;
 	
 	//---------------------------------------------
 	// METHODS FROM SUPERCLASS
@@ -62,7 +63,8 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				//Load Game Scene!
 				SceneManager.getInstance().loadGameScene(engine);
 				return true;
-			case MENU_OPTIONS:
+			case MENU_SOUND:
+				GameActivity.toggle(engine);
 				return true;
 			default:
 				return false;
@@ -75,7 +77,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	
 	private void createBackground()
 	{
-		attachChild(new Sprite(400, 240, resourcesManager.menu_background_region, vbom)
+		attachChild(new Sprite(340, 600, resourcesManager.menu_background_region, vbom)
 		{
     		@Override
             protected void preDraw(GLState pGLState, Camera pCamera) 
@@ -89,10 +91,10 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private void createMenuChildScene()
 	{
 		menuChildScene = new MenuScene(camera);
-		menuChildScene.setPosition(400, 240);
+		menuChildScene.setPosition(340,600);
 		
 		final IMenuItem playMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_PLAY, resourcesManager.play_region, vbom), 1.2f, 1);
-		final IMenuItem optionsMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_OPTIONS, resourcesManager.options_region, vbom), 1.2f, 1);
+		final IMenuItem optionsMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_SOUND, resourcesManager.options_region, vbom), 1.2f, 1);
 		
 		menuChildScene.addMenuItem(playMenuItem);
 		menuChildScene.addMenuItem(optionsMenuItem);
