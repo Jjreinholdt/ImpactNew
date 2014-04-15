@@ -95,7 +95,7 @@ public class ResourcesManager
 	private void loadMenuGraphics()
 	{
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/menu/");
-        menuTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 680, 1200, TextureOptions.BILINEAR);
+        menuTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1200, 1200, TextureOptions.BILINEAR);
         menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "menu_background.png");
         play_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "play.png");
         options_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "options.png");
@@ -170,8 +170,8 @@ public class ResourcesManager
 	public void loadSplashScreen()
 	{
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-        splashTextureAtlas = new BitmapTextureAtlas(activity.getTextureManager(), 1024, 500, TextureOptions.BILINEAR);
-        splash_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(splashTextureAtlas, activity, "Impact.png", 0, 0);
+        splashTextureAtlas = new BitmapTextureAtlas(activity.getTextureManager(), 680, 1200, TextureOptions.BILINEAR);
+        splash_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(splashTextureAtlas, activity, "Impact.png",0,0);
         splashTextureAtlas.load();	
 	}
 	

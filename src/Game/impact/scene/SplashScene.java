@@ -14,7 +14,7 @@ public class SplashScene extends BaseScene
 	@Override
 	public void createScene()
 	{
-		splash = new Sprite(0, 0, resourcesManager.splash_region, vbom)
+		splash = new Sprite(340, 600, resourcesManager.splash_region, vbom)
     	{
     		@Override
             protected void preDraw(GLState pGLState, Camera pCamera) 
@@ -23,9 +23,7 @@ public class SplashScene extends BaseScene
                 pGLState.enableDither();
             }
     	};
-    	
-    	splash.setScale(.75f);
-    	splash.setPosition(135,240);
+
     	attachChild(splash);
 	}
 
