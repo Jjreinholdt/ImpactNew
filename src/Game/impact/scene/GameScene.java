@@ -1,5 +1,6 @@
 package Game.impact.scene;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import org.andengine.engine.camera.hud.HUD;
@@ -85,7 +86,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 	private Sensor mAccelerometer;
 
 	public static float TILT;
-
+	public static int boost = 5;
 	private boolean gameOverDisplayed = false;
 	private Text calcEndVelocity;
 	
@@ -197,6 +198,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 							{	
 								pX=getX();
 								pY=getY();
+								player.setVelocityY(Player.getBody().getLinearVelocity().y+boost);
 								createExplosion(pX,pY);
 								this.setVisible(false);
 								this.setIgnoreUpdate(true);
@@ -266,6 +268,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 							if (player.collidesWith(this))
 							{
 								addToScore(10);
+								player.setVelocityY(Player.getBody().getLinearVelocity().y-4);
 								this.setVisible(false);
 								this.setIgnoreUpdate(true);
 							}
@@ -339,8 +342,18 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 				return levelObject;
 			}
 		});
-
-		levelLoader.loadLevelFromAsset(activity.getAssets(), "level/" + levelID + ".lvl");
+		
+		try
+		{
+			FileInputStream in = activity.openFileInput("" + levelID + ".lvl"); //reads a file created by Generator
+			levelLoader.loadLevelFromStream(in);
+			in.close();
+		}catch(Exception e)
+		{
+			System.out.println("Failed to open file");
+		}
+		
+		//levelLoader.loadLevelFromAsset(activity.getAssets(), "level/" + levelID + ".lvl");
 	}
 	
 	private void createGameOverText()
