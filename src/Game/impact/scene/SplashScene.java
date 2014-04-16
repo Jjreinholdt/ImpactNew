@@ -23,7 +23,6 @@ public class SplashScene extends BaseScene
                 pGLState.enableDither();
             }
     	};
-    	
     	splash.setScale(.75f);
     	splash.setPosition(135,240);
     	attachChild(splash);
