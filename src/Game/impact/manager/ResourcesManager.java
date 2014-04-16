@@ -23,6 +23,7 @@ import org.andengine.util.debug.Debug;
 import android.graphics.Color;
 
 import Game.impact.GameActivity;
+import Game.impact.levelGen.Generator;
 
 import org.andengine.ui.IGameInterface.OnCreateResourcesCallback;
 import org.andengine.ui.activity.BaseGameActivity;
@@ -41,7 +42,7 @@ public class ResourcesManager
 	public VertexBufferObjectManager vbom;
 	
 	public Font font;
-	
+	public Generator gen = new Generator();
 	//---------------------------------------------
 	// TEXTURES & TEXTURE REGIONS
 	//---------------------------------------------
@@ -164,7 +165,8 @@ public class ResourcesManager
 	
 	public void unloadGameTextures()
 	{
-		// TODO (Since we did not create any textures for game scene yet)
+		gameTextureAtlas.unload();
+		gen.genlvl(activity, 1, 10000);
 	}
 	
 	public void loadSplashScreen()
@@ -172,7 +174,8 @@ public class ResourcesManager
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
         splashTextureAtlas = new BitmapTextureAtlas(activity.getTextureManager(), 1024, 500, TextureOptions.BILINEAR);
         splash_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(splashTextureAtlas, activity, "Impact.png", 0, 0);
-        splashTextureAtlas.load();	
+        splashTextureAtlas.load();
+		gen.genlvl(activity, 1, 10000);
 	}
 	
 	public void unloadSplashScreen()
