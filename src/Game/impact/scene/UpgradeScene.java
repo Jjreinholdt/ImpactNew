@@ -13,7 +13,7 @@ import Game.impact.base.BaseScene;
 import Game.impact.manager.SceneManager;
 import Game.impact.manager.SceneManager.SceneType;
 
-public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
+public class UpgradeScene extends BaseScene implements IOnMenuItemClickListener
 {
 	//---------------------------------------------
 	// VARIABLES
@@ -21,9 +21,11 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	
 	private MenuScene menuChildScene;
 	
-	private final int MENU_PLAY = 0;
-	private final int MENU_SOUND = 1;
+	private final int LAUNCH = 0;
+	private final int BOOST = 1;
+	private final int U1 = 2;
 	
+	private int u1C = 0;
 	//---------------------------------------------
 	// METHODS FROM SUPERCLASS
 	//---------------------------------------------
@@ -38,13 +40,13 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	@Override
 	public void onBackKeyPressed()
 	{
-		System.exit(0);
+		SceneManager.getInstance().loadMenuSceneFromUpgrade(engine);
 	}
 
 	@Override
 	public SceneType getSceneType()
 	{
-		return SceneType.SCENE_MENU;
+		return SceneType.SCENE_UPGRADE;
 	}
 	
 
@@ -58,12 +60,35 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	{
 		switch(pMenuItem.getID())
 		{
-			case MENU_PLAY:
+			case LAUNCH:
 				//Load Game Scene!
-				SceneManager.getInstance().loadGameScene(engine);
+				if(u1C == 0 && resourcesManager.upgradePoints >= 300)
+				{
+					resourcesManager.launchVelocity += 10;
+					resourcesManager.u1Pos +=100;
+					u1C++;
+					resourcesManager.upgradePoints -= 300;
+					SceneManager.getInstance().loadMenuSceneFromUpgrade(engine);
+				}
+				else if(u1C == 1 && resourcesManager.upgradePoints >= 500)
+				{
+					resourcesManager.launchVelocity += 10;
+					resourcesManager.u1Pos +=100;
+					u1C++;
+					resourcesManager.upgradePoints -= 500;
+					SceneManager.getInstance().loadMenuSceneFromUpgrade(engine);
+				}
+				else if(u1C == 2 && resourcesManager.upgradePoints >= 700)
+				{
+					resourcesManager.launchVelocity += 10;
+					resourcesManager.u1Pos +=100;
+					u1C++;
+					resourcesManager.upgradePoints -= 700;
+					SceneManager.getInstance().loadMenuSceneFromUpgrade(engine);
+				}
 				return true;
-			case MENU_SOUND:
-				SceneManager.getInstance().loadUpgradeScene(engine);
+			case BOOST:
+				resourcesManager.boostValue += 4;
 				return true;
 			default:
 				return false;
@@ -90,19 +115,22 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private void createMenuChildScene()
 	{
 		menuChildScene = new MenuScene(camera);
-		menuChildScene.setPosition(340,600);
+		menuChildScene.setPosition(360,1045);
 		
-		final IMenuItem playMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_PLAY, resourcesManager.play_region, vbom), 1.2f, 1);
-		final IMenuItem optionsMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_SOUND, resourcesManager.options_region, vbom), 1.2f, 1);
+		final IMenuItem launchMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(LAUNCH, resourcesManager.launch_region, vbom), .5f, 1);
+		//final IMenuItem boostMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(BOOST, resourcesManager.boost_region, vbom), 1.2f, 1);
+		final IMenuItem u1MenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(U1, resourcesManager.u1_region, vbom), 1f, 1);
 		
-		menuChildScene.addMenuItem(playMenuItem);
-		menuChildScene.addMenuItem(optionsMenuItem);
+		menuChildScene.addMenuItem(launchMenuItem);
+		//menuChildScene.addMenuItem(boostMenuItem);
+		menuChildScene.addMenuItem(u1MenuItem);
 		
 		menuChildScene.buildAnimations();
 		menuChildScene.setBackgroundEnabled(false);
 		
-		playMenuItem.setPosition(0, +55);
-		optionsMenuItem.setPosition(0, -55);
+		launchMenuItem.setPosition(+300, 0);
+		//boostMenuItem.setPosition(0, -55);
+		u1MenuItem.setPosition(0+resourcesManager.u1Pos,0);
 		
 		menuChildScene.setOnMenuItemClickListener(this);
 		

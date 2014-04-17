@@ -286,6 +286,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 							if (!gameOverDisplayed)
 							{	createGameOverText();
 								displayGameOverText();
+								player.setIgnoreUpdate(true);
 							}
 						}
 					};
@@ -368,6 +369,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 		scoreText.setAnchorCenter(0, 0);	
 		attachChild(calcEndVelocity);
 		gameOverDisplayed = true;
+		resourcesManager.upgradePoints+=score;
 	}
 	
 	private void createHUD()

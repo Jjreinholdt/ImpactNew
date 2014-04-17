@@ -1,7 +1,6 @@
 package Game.impact.manager;
 
 import org.andengine.audio.music.Music;
-import org.andengine.audio.music.MusicFactory;
 import org.andengine.audio.sound.Sound;
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.BoundCamera;
@@ -25,8 +24,6 @@ import android.graphics.Color;
 import Game.impact.GameActivity;
 import Game.impact.levelGen.Generator;
 
-import org.andengine.ui.IGameInterface.OnCreateResourcesCallback;
-import org.andengine.ui.activity.BaseGameActivity;
 
 public class ResourcesManager
 {
@@ -38,6 +35,7 @@ public class ResourcesManager
 	public int launchVelocity = 20;
 	public int boostValue = 4;
 	public int upgradePoints = 0;
+	public int u1Pos = 0;
 	
 	public Engine engine;
 	public GameActivity activity;
@@ -56,6 +54,7 @@ public class ResourcesManager
 	public ITextureRegion splash_region;
 	public ITextureRegion menu_background_region;
 	public ITextureRegion play_region;
+	public ITextureRegion u1_region;
 	public ITextureRegion options_region;
 	public ITextureRegion launch_region;
 	public ITextureRegion boost_region;
@@ -110,7 +109,8 @@ public class ResourcesManager
 	{
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/upgrade/");
 		upgradeTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1200, 1200, TextureOptions.BILINEAR);
-		menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(upgradeTextureAtlas, activity, "menu_background.png");
+		menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(upgradeTextureAtlas, activity, "Up.png");
+        u1_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(upgradeTextureAtlas, activity, "Selected.png");
         launch_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(upgradeTextureAtlas, activity, "upgrade.png");
         boost_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(upgradeTextureAtlas, activity, "upgrade.png");
 		
@@ -124,7 +124,7 @@ public class ResourcesManager
 			Debug.e(e);
 		}
 	}
-	
+
 	private void loadUpgradeFonts()
 	{
 
