@@ -10,12 +10,8 @@ import Game.impact.scene.GameScene;
 import Game.impact.scene.LoadingScene;
 import Game.impact.scene.MainMenuScene;
 import Game.impact.scene.SplashScene;
+import Game.impact.scene.UpgradeScene;
 
-/**
- * @author Mateusz Mysliwiec
- * @author www.matim-dev.com
- * @version 1.0
- */
 public class SceneManager
 {
 	//---------------------------------------------
@@ -26,6 +22,7 @@ public class SceneManager
 	private BaseScene menuScene;
 	private BaseScene gameScene;
 	private BaseScene loadingScene;
+	private BaseScene upgradeScene;
 	
 	//---------------------------------------------
 	// VARIABLES
@@ -45,6 +42,7 @@ public class SceneManager
 		SCENE_MENU,
 		SCENE_GAME,
 		SCENE_LOADING,
+		SCENE_UPGRADE,
 	}
 	
 	//---------------------------------------------
@@ -73,6 +71,9 @@ public class SceneManager
 				break;
 			case SCENE_LOADING:
 				setScene(loadingScene);
+				break;
+			case SCENE_UPGRADE:
+				setScene(upgradeScene);
 				break;
 			default:
 				break;
@@ -135,6 +136,37 @@ public class SceneManager
 		}));
 	}
 	
+	public void loadUpgradeScene(final Engine mEngine)
+	{
+		setScene(loadingScene);
+		ResourcesManager.getInstance().unloadMenuTextures();
+		mEngine.registerUpdateHandler(new TimerHandler(0.1f, new ITimerCallback() 
+		{
+            public void onTimePassed(final TimerHandler pTimerHandler) 
+            {
+            	mEngine.unregisterUpdateHandler(pTimerHandler);
+            	ResourcesManager.getInstance().loadUpgradeResources();
+        		upgradeScene = new UpgradeScene();
+        		setScene(upgradeScene);
+            }
+		}));
+	}
+	
+	public void loadMenuSceneFromUpgrade(final Engine mEngine)
+	{
+		setScene(loadingScene);
+		upgradeScene.disposeScene();
+		ResourcesManager.getInstance().unloadUpgradeTextures();
+		mEngine.registerUpdateHandler(new TimerHandler(0.1f, new ITimerCallback() 
+		{
+            public void onTimePassed(final TimerHandler pTimerHandler) 
+            {
+            	mEngine.unregisterUpdateHandler(pTimerHandler);
+            	ResourcesManager.getInstance().loadMenuTextures();
+        		setScene(menuScene);
+            }
+		}));
+	}
 	//---------------------------------------------
 	// GETTERS AND SETTERS
 	//---------------------------------------------

@@ -86,7 +86,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 	private Sensor mAccelerometer;
 
 	public static float TILT;
-	public static int boost = 5;
 	private boolean gameOverDisplayed = false;
 	private Text calcEndVelocity;
 	
@@ -142,7 +141,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 		{
 			if (!firstTouch)
 			{
-				player.launch();
+				player.launch(resourcesManager.launchVelocity);
 				firstTouch = true;
 			}
 		}
@@ -198,7 +197,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 							{	
 								pX=getX();
 								pY=getY();
-								player.setVelocityY(Player.getBody().getLinearVelocity().y+boost);
+								player.setVelocityY(Player.getBody().getLinearVelocity().y+resourcesManager.boostValue);
 								createExplosion(pX,pY);
 								this.setVisible(false);
 								this.setIgnoreUpdate(true);

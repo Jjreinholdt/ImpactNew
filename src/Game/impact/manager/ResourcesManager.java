@@ -35,6 +35,9 @@ public class ResourcesManager
 	//---------------------------------------------
 	
 	private static final ResourcesManager INSTANCE = new ResourcesManager();
+	public int launchVelocity = 20;
+	public int boostValue = 4;
+	public int upgradePoints = 0;
 	
 	public Engine engine;
 	public GameActivity activity;
@@ -54,6 +57,8 @@ public class ResourcesManager
 	public ITextureRegion menu_background_region;
 	public ITextureRegion play_region;
 	public ITextureRegion options_region;
+	public ITextureRegion launch_region;
+	public ITextureRegion boost_region;
 	
 	// Game Texture
 	public static BuildableBitmapTextureAtlas gameTextureAtlas;
@@ -70,6 +75,7 @@ public class ResourcesManager
 	
 	private BitmapTextureAtlas splashTextureAtlas;
 	private BuildableBitmapTextureAtlas menuTextureAtlas;
+	private BuildableBitmapTextureAtlas upgradeTextureAtlas;
 	
 	// Level Complete Window
 	public ITextureRegion rotator_region;
@@ -86,11 +92,42 @@ public class ResourcesManager
 		loadMenuFonts();
 	}
 	
+	public void loadUpgradeResources()
+	{
+		loadUpgradeGraphics();
+		loadUpgradeFonts();
+		
+	}
+	
 	public void loadGameResources()
 	{
 		loadGameGraphics();
 		loadGameFonts();
 		loadGameAudio();
+	}
+	
+	private void loadUpgradeGraphics()
+	{
+		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/upgrade/");
+		upgradeTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1200, 1200, TextureOptions.BILINEAR);
+		menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(upgradeTextureAtlas, activity, "menu_background.png");
+        launch_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(upgradeTextureAtlas, activity, "upgrade.png");
+        boost_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(upgradeTextureAtlas, activity, "upgrade.png");
+		
+		try 
+    	{
+			this.upgradeTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
+			this.upgradeTextureAtlas.load();
+		} 
+    	catch (final TextureAtlasBuilderException e)
+    	{
+			Debug.e(e);
+		}
+	}
+	
+	private void loadUpgradeFonts()
+	{
+
 	}
 	
 	private void loadMenuGraphics()
@@ -184,6 +221,11 @@ public class ResourcesManager
 		splash_region = null;
 	}
 	
+	public void unloadUpgradeTextures()
+	{
+		upgradeTextureAtlas.unload();
+	}
+	
 	public void unloadMenuTextures()
 	{
 		menuTextureAtlas.unload();
@@ -194,7 +236,6 @@ public class ResourcesManager
 		menuTextureAtlas.load();
 	}
 	
-
 	public static void prepareManager(Engine engine, GameActivity activity, BoundCamera camera, VertexBufferObjectManager vbom)
 	{
 		getInstance().engine = engine;

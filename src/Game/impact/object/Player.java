@@ -88,11 +88,11 @@ public abstract class Player extends AnimatedSprite
 		finalVelocity=y;
 	}
 	
-	public void launch() 
+	public void launch(int velocity) 
 	{
 		if(launched)
 			return;
-		body.setLinearVelocity(new Vector2(body.getLinearVelocity().x,20));
+		body.setLinearVelocity(new Vector2(body.getLinearVelocity().x,velocity));
 		launched = true;
 	}
 	

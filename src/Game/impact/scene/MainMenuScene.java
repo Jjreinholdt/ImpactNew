@@ -64,7 +64,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				SceneManager.getInstance().loadGameScene(engine);
 				return true;
 			case MENU_SOUND:
-				GameActivity.toggle(engine);
+				SceneManager.getInstance().loadUpgradeScene(engine);
 				return true;
 			default:
 				return false;
