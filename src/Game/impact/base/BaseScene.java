@@ -11,8 +11,7 @@ import Game.impact.manager.ResourcesManager;
 import Game.impact.manager.SceneManager.SceneType;
 
 /**
- * @author Mateusz Mysliwiec
- * @author www.matim-dev.com
+ * @author James Reinholdt
  * @version 1.0
  */
 public abstract class BaseScene extends Scene

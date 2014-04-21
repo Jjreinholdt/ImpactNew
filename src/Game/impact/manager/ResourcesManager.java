@@ -32,10 +32,22 @@ public class ResourcesManager
 	//---------------------------------------------
 	
 	private static final ResourcesManager INSTANCE = new ResourcesManager();
-	public int launchVelocity = 20;
-	public int boostValue = 4;
+	public int launchVelocity = 25;
+	public int boostValue = 200;
+	public int spawnRate = 2;
 	public int upgradePoints = 0;
-	public int u1Pos = 0;
+	public int slowdown = -300;
+	
+	public int u1Pos = -400;
+	public int u1C = 0;
+	public int u2Pos = -400;
+	public int u2C = 0;
+	public int u3Pos = -400;
+	public boolean u3C = true;
+	public int u4Pos = -400;
+	public int u4C = 0;
+	
+	
 	
 	public Engine engine;
 	public GameActivity activity;
@@ -203,7 +215,7 @@ public class ResourcesManager
 	public void unloadGameTextures()
 	{
 		gameTextureAtlas.unload();
-		gen.genlvl(activity, 1, 10000);
+		gen.regen(activity, 1, 10000, spawnRate);
 	}
 	
 	public void loadSplashScreen()
@@ -212,7 +224,7 @@ public class ResourcesManager
         splashTextureAtlas = new BitmapTextureAtlas(activity.getTextureManager(), 1024, 500, TextureOptions.BILINEAR);
         splash_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(splashTextureAtlas, activity, "Impact.png", 0, 0);
         splashTextureAtlas.load();
-		gen.genlvl(activity, 1, 10000);
+		gen.genlvl(activity, 1, 10000, spawnRate);
 	}
 	
 	public void unloadSplashScreen()

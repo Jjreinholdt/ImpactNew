@@ -29,7 +29,7 @@ public class Generator {
     	gen = new Random(xor128());
     }
     
-	public void genlvl(GameActivity activity, int level, int height)
+	public void genlvl(GameActivity activity, int level, int height, int rate)
 	{
 		try
 		{
@@ -44,11 +44,12 @@ public class Generator {
 	        int tiles = height/TILE_SIZE;
 	        int range = 2;
 	        String type = "";
+	        
 	        for(int i = 10; i <= tiles; ++i)
 	        {
 	        	if((i%5)==0)
 	        	{
-	        		if(gen.nextInt(2) == 0)
+	        		if(gen.nextInt(rate) == 0)
 	        		{
 	        			type = "bird";
 	    	        	line = "    <entity x=\"" + (10+gen.nextInt(WIDTH-40)) + "\" y=\"" + i*TILE_SIZE + "\" type=\"" + type + "\"/>\n";
@@ -96,5 +97,11 @@ public class Generator {
 		{
 			System.out.println("Failed to Write\n");
 		}
+	}
+	
+	public void regen(GameActivity activity, int level, int height, int rate)
+	{
+		activity.deleteFile("" + level + ".lvl");
+		genlvl(activity, level, height, rate);
 	}
 }

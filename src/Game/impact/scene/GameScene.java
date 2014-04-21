@@ -2,6 +2,7 @@ package Game.impact.scene;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Iterator;
 
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.handler.IUpdateHandler;
@@ -23,6 +24,7 @@ import org.andengine.input.touch.TouchEvent;
 import org.andengine.util.SAXUtils;
 import org.andengine.util.adt.align.HorizontalAlign;
 import org.andengine.util.adt.color.Color;
+import org.andengine.util.debug.Debug;
 import org.andengine.util.level.EntityLoader;
 import org.andengine.util.level.constants.LevelConstants;
 import org.andengine.util.level.simple.SimpleLevelEntityLoaderData;
@@ -36,6 +38,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -59,6 +62,9 @@ import Game.impact.object.Player;
 public class GameScene extends BaseScene implements IOnSceneTouchListener, SensorEventListener
 {
 	private int score = 0;
+	private int l;
+	private int b;
+	private int s;
 	
 	private HUD gameHUD;
 	private Text scoreText;
@@ -85,16 +91,52 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 	private SensorManager mSensorManager;
 	private Sensor mAccelerometer;
 
-	public static float TILT;
+	public float TILT;
 	private boolean gameOverDisplayed = false;
 	private Text calcEndVelocity;
 	
 	private boolean firstTouch = false;
 	private float pX,pY;
 	
+	public void destroyPhysicsWorld()
+	{
+	    engine.runOnUpdateThread(new Runnable()
+	    {
+	        public void run()
+	        {
+	            Iterator<Body> localIterator = physicsWorld.getBodies();
+	            while (true)
+	            {
+	                if (!localIterator.hasNext())
+	                {
+	                    physicsWorld.clearForces();
+	                    physicsWorld.clearPhysicsConnectors();
+	                    physicsWorld.reset();
+	                    physicsWorld.dispose();
+	                    System.gc();
+	                    return;
+	                }
+	                try
+	                {
+	                    final Body localBody = (Body) localIterator.next();
+	                    GameScene.this.physicsWorld.destroyBody(localBody);
+	                } 
+	                catch (Exception localException)
+	                {
+	                    Debug.e(localException);
+	                }
+	            }
+	        }
+	    });
+	}
+	
 	@Override
 	public void createScene()
 	{
+		l = resourcesManager.launchVelocity;
+		b = resourcesManager.boostValue;
+		s = resourcesManager.slowdown;
+		
 		createBackground();
 		createHUD();
 		createPhysics();
@@ -110,6 +152,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 		}
 		
 		setOnSceneTouchListener(this); 
+		
 	}
 
 	@Override
@@ -130,18 +173,18 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 		camera.setHUD(null);
 		camera.setChaseEntity(null); //TODO
 		camera.setCenter(400, 240);
-		
+		destroyPhysicsWorld();
 		// TODO code responsible for disposing scene
 		// removing all game scene objects.
 	}
 	
 	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent)
 	{
-		if (pSceneTouchEvent.isActionDown())
+		if (pSceneTouchEvent.isActionUp())
 		{
 			if (!firstTouch)
 			{
-				player.launch(resourcesManager.launchVelocity);
+				player.launch(l);
 				firstTouch = true;
 			}
 		}
@@ -197,10 +240,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 							{	
 								pX=getX();
 								pY=getY();
-								player.setVelocityY(Player.getBody().getLinearVelocity().y+resourcesManager.boostValue);
 								createExplosion(pX,pY);
 								this.setVisible(false);
 								this.setIgnoreUpdate(true);
+								player.setVelocityY(b);
 							}
 							
 						}
@@ -224,9 +267,11 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 								pY=getY();
 								createExplosion(pX,pY);
 								addToScore(15);
-								player.setVelocityY(Player.getBody().getLinearVelocity().y-4);
 								this.setVisible(false);
 								this.setIgnoreUpdate(true);
+								if(player.getBody().getLinearVelocity().y > 0)
+									player.setVelocityY(s);
+								detachChild(explosion);
 							}
 						}
 					};
@@ -246,9 +291,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 							{
 								GameActivity.explosion3.play();
 								addToScore(15);
-								player.setVelocityY(Player.getBody().getLinearVelocity().y-4);
 								this.setVisible(false);
 								this.setIgnoreUpdate(true);
+								if(player.getBody().getLinearVelocity().y > 0)
+									player.setVelocityY(s);
 							}
 						}
 					};
@@ -267,9 +313,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 							if (player.collidesWith(this))
 							{
 								addToScore(10);
-								player.setVelocityY(Player.getBody().getLinearVelocity().y-4);
 								this.setVisible(false);
 								this.setIgnoreUpdate(true);
+								if(player.getBody().getLinearVelocity().y > 0)
+									player.setVelocityY(s);
 							}
 						}
 					};
@@ -286,7 +333,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 							if (!gameOverDisplayed)
 							{	createGameOverText();
 								displayGameOverText();
-								player.setIgnoreUpdate(true);
+								player.getBody().setActive(false);
 							}
 						}
 					};
@@ -304,9 +351,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 
 							if (player.collidesWith(this))
 							{
-								player.setVelocityY(Player.getBody().getLinearVelocity().y-4);
 								this.setVisible(false);
 								this.setIgnoreUpdate(true);
+								if(player.getBody().getLinearVelocity().y > 0)
+									player.setVelocityY(s);
 							}
 						}
 					};
@@ -455,8 +503,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 					{   
 						if (x1.getBody().getUserData().equals("platform1") && x2.getBody().getUserData().equals("player"))
 						{	
-							player.setFinalVelocity(Player.getBody().getLinearVelocity().y);
+							player.setFinalVelocity(player.getBody().getLinearVelocity().y);
+							player.setVelocityX(0);
 							player.onDie();
+							player.setLaunch(false);
 						}
 					}
 				}
@@ -500,13 +550,11 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, Senso
 	@Override
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 
-	@SuppressWarnings("static-access")
 	@Override
 	public void onSensorChanged(SensorEvent event) 
 	{	
-		if(player.getLaunch()){
 		TILT = event.values[0];
 		player.setVelocityX(-TILT*5);
-		}
 	}
+	
 }

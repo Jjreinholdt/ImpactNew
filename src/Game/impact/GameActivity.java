@@ -57,19 +57,7 @@ public class GameActivity extends BaseGameActivity
 	    	SceneManager.getInstance();
 			SceneManager.getCurrentScene().onBackKeyPressed();
 	    }
-	    switch (keyCode) 
-	    {
-        case KeyEvent.KEYCODE_D:
-        	if(Player.getLaunch())
-            Player.setVelocityX(15f);
-            return true;
-        case KeyEvent.KEYCODE_S:
-        	if(Player.getLaunch())
-        	Player.setVelocityX(-15f);
-        	return true;
-       
-	    default: return false; 
-	    }
+	    return true;
 	}
 
 	public void onCreateResources(OnCreateResourcesCallback pOnCreateResourcesCallback) throws IOException

@@ -10,6 +10,8 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+
 import Game.impact.manager.ResourcesManager;
 
 
@@ -19,9 +21,10 @@ public abstract class Player extends AnimatedSprite
 	// VARIABLES
 	// ---------------------------------------------
 	
-	private static Body body;
+	private Body body;
 	private float finalVelocity;
-	private static boolean launched = false;
+	private boolean launched;
+	private Vector2 last;
 	//private static boolean invulnerable = false; 
 	//private static int launchSpeed;
 	
@@ -32,8 +35,10 @@ public abstract class Player extends AnimatedSprite
 	public Player(float pX, float pY, VertexBufferObjectManager vbo, Camera camera, PhysicsWorld physicsWorld)
 	{
 		super(pX, pY, ResourcesManager.getInstance().player_region, vbo);
+		launched = false;
 		createPhysics(camera, physicsWorld);
 		camera.setChaseEntity(this);
+		last = body.getLinearVelocity();
 	}
 	
 	// ---------------------------------------------
@@ -41,8 +46,10 @@ public abstract class Player extends AnimatedSprite
 	// ---------------------------------------------
 	
 	private void createPhysics(final Camera camera, PhysicsWorld physicsWorld)
-	{		
-		body = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.DynamicBody, PhysicsFactory.createFixtureDef(0, 0, 0));
+	{	
+		FixtureDef def = PhysicsFactory.createFixtureDef(0, 0, 0);
+		def.isSensor = true;
+		body = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.DynamicBody, def);
 
 		body.setUserData("player");
 		body.setFixedRotation(true);
@@ -55,6 +62,9 @@ public abstract class Player extends AnimatedSprite
 				super.onUpdate(pSecondsElapsed);
 				camera.onUpdate(0.1f);
 				
+				if(body.getLinearVelocity().y-last.y >10)
+					body.setLinearVelocity(last);
+				
 				if (getX() - getWidth() < 0) 
 				{
 					setVelocityX(body.getLinearVelocity().x+10);
@@ -64,18 +74,21 @@ public abstract class Player extends AnimatedSprite
 					setVelocityX(-body.getLinearVelocity().x-10);
 				    setX(camera.getWidth() - getWidth()/2);
 				}
+				
+				last = body.getLinearVelocity();
 	        }
 		});
+		body.setActive(false);
 	}
 	public void setLaunch(boolean x)
 	{
 		launched=x;
 	}
-	public static boolean getLaunch()
+	public boolean getLaunch()
 	{
 		return launched;
 	}
-	public static Body getBody()
+	public Body getBody()
 	{	
 		return body;
 	}
@@ -90,8 +103,7 @@ public abstract class Player extends AnimatedSprite
 	
 	public void launch(int velocity) 
 	{
-		if(launched)
-			return;
+		body.setActive(true);
 		body.setLinearVelocity(new Vector2(body.getLinearVelocity().x,velocity));
 		launched = true;
 	}
@@ -99,13 +111,14 @@ public abstract class Player extends AnimatedSprite
 
 	public abstract void onDie();
 
-	public static void setVelocityX(float f) 
+	public void setVelocityX(float f) 
 	{
-			body.setLinearVelocity(new Vector2(f,body.getLinearVelocity().y));
+		if(launched)
+			body.setLinearVelocity(f,body.getLinearVelocity().y);
 	}
 	public void setVelocityY(float f)
 	{
-		body.setLinearVelocity(new Vector2(body.getLinearVelocity().x,f));
+		body.applyForce(new Vector2(0, f), body.getWorldCenter());
 	}
 		
 		

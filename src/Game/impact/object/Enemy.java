@@ -11,6 +11,8 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+
 import Game.impact.manager.ResourcesManager;
 import Game.impact.scene.GameScene;
 
@@ -20,7 +22,7 @@ public abstract class Enemy extends Sprite
 	// ---------------------------------------------
 	// VARIABLES
 	// ---------------------------------------------
-	private static Body body;
+	private Body body;
 	private Sprite enemySprite;
 	private PhysicsConnector pConnect;
 	// ---------------------------------------------
@@ -46,16 +48,18 @@ public abstract class Enemy extends Sprite
 	
 	private void createPhysics(ITextureRegion region, PhysicsWorld physicsWorld)
 	{	
+		FixtureDef def = PhysicsFactory.createFixtureDef(0, 0, 0);
+		def.isSensor = true;
 		if(region == ResourcesManager.bird_region)
 		{	
-			body = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.KinematicBody, PhysicsFactory.createFixtureDef(0, 0, 0));
+			body = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.KinematicBody, def);
 			body.setUserData(getSprite());
 			body.setLinearVelocity(-3, 0);
 		}
 
 		if(region == ResourcesManager.platform2_region)
 		{
-			body = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.KinematicBody, PhysicsFactory.createFixtureDef(0, 0, 0));
+			body = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.KinematicBody, def);
 			body.setUserData(getSprite());
 		}
 		
@@ -77,15 +81,7 @@ public abstract class Enemy extends Sprite
 				
 				if(getSprite().getTextureRegion() == ResourcesManager.platform2_region)
 				{
-					double distance = Math.sqrt((GameScene.player.getX() - getX())*(GameScene.player.getX() - getX()) + (GameScene.player.getY() - getY())*(GameScene.player.getY() - getY()));
-					if( distance <= 400)
-					{	
-						if(GameScene.player.getX() < getX())
-							 getBody().setLinearVelocity(-1,0);
-						else getBody().setLinearVelocity(1,0);
-					
-					}
-					else getBody().setLinearVelocity(0,0);
+					getBody().setLinearVelocity(0,0);
 				}   
 	        }
 		};
@@ -98,7 +94,7 @@ public abstract class Enemy extends Sprite
 	// Getters
 	// --------
 	
-	public static Body getBody()
+	public Body getBody()
 	{	
 		return body;
 	}
